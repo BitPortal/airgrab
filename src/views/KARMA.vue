@@ -5,6 +5,7 @@
       <p>Total：{{total}} KARMA</p>
       <p>Powered Up：{{powerUp}} KARMA</p>
       <p>Refunding：{{refunding}} KARMA</p>
+      <p v-if="powerUp > 0">Reward time </p>
     </header>
 
     <main>
@@ -77,20 +78,22 @@
     computed: {
       'powerUpData'() {
         return {
-          actions: {
-            account: 'therealkarma',
-            name: 'powerup',
-            authorization: [
-              {
-                actor: this.userName,
-                permission: this.permission
+          actions: [
+            {
+              account: 'therealkarma',
+              name: 'powerup',
+              authorization: [
+                {
+                  actor: this.userName,
+                  permission: this.permission
+                }
+              ],
+              data: {
+                owner: this.userName,
+                quantity: `${this.powerUpQuantity} KARMA`
               }
-            ],
-            data: {
-              owner: this.userName,
-              quantity: `${this.powerUpQuantity} KARMA`
-            },
-          },
+            }
+          ],
           address: this.address,
           account: this.userName
         }
@@ -98,20 +101,22 @@
 
       'powerDownData'() {
         return {
-          actions: {
-            account: 'therealkarma',
-            name: 'powerdown',
-            authorization: [
-              {
-                actor: this.userName,
-                permission: this.permission
+          actions: [
+            {
+              account: 'therealkarma',
+              name: 'powerdown',
+              authorization: [
+                {
+                  actor: this.userName,
+                  permission: this.permission
+                }
+              ],
+              data: {
+                owner: this.userName,
+                quantity: `${this.powerDownQuantity} KARMA`
               }
-            ],
-            data: {
-              owner: this.userName,
-              quantity: `${this.powerDownQuantity} KARMA`
-            },
-          },
+            }
+          ],
           address: this.address,
           account: this.userName
         }
@@ -148,7 +153,10 @@
           this.powerUpQuantity = Number(this.powerUpQuantity).toFixed(4);
           console.log(this.powerUpData);
           this.$tp.pushEosAction(this.powerUpData).then(res => {
-            res.result ? this.$dialog.alert({message: '抵押操作成功'}) : this.$dialog.alert({message: '抵押操作失败'});
+            if (res.result) {
+              this.getInfo();
+            }
+            // res.result ? this.$dialog.alert({message: '抵押操作成功'}) : this.$dialog.alert({message: '抵押操作失败'});
           });
         }
       },
@@ -157,7 +165,10 @@
         if (this.quantityCheck(this.powerDownQuantity, '赎回')) {
           this.powerDownQuantity = Number(this.powerDownQuantity).toFixed(4);
           this.$tp.pushEosAction(this.powerDownData).then(res => {
-            res.result ? this.$dialog.alert({message: '赎回操作成功'}) : this.$dialog.alert({message: '赎回操作失败'});
+            if (res.result) {
+              this.getInfo();
+            }
+            // res.result ? this.$dialog.alert({message: '赎回操作成功'}) : this.$dialog.alert({message: '赎回操作失败'});
           });
         }
       },
@@ -191,7 +202,7 @@
           limit: 500
         }).then(res => {
           if (res.result) {
-            // console.log(res, 2222);
+            console.log(res, 2222);
             if (res.data.rows.length > 0) {
               this.powerUp = res.data.rows[0].quantity.replace(' KARMA', '');
             }
@@ -213,19 +224,23 @@
             }
           }
         });
+      },
+
+      getInfo() {
+        this.$tp.getCurrentWallet().then(res => {
+          if (res.result) {
+            this.address = res.data.address;
+            this.userName = res.data.name;
+            this.getBalance();
+            this.getRefundingTable();
+            this.getPowerTable();
+          }
+        });
       }
     },
 
     created() {
-      this.$tp.getCurrentWallet().then(res => {
-        if (res.result) {
-          this.address = res.data.address;
-          this.userName = res.data.name;
-          this.getBalance();
-          this.getRefundingTable();
-          this.getPowerTable();
-        }
-      });
+      this.getInfo();
     }
   }
 </script>
