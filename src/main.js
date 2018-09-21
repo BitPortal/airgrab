@@ -3,11 +3,23 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-// import Mint from 'mint-ui';
 
-// Vue.use(Mint);
+import tp from "tp-eosjs"
+import _ from 'lodash'
+import './base/_main.scss'
 
-Vue.config.productionTip = false
+import { Tab, Tabs, Button, Field, CellGroup, NumberKeyboard } from 'vant';
+
+import VConsole from 'vconsole';
+const vConsole = new VConsole();
+
+
+Vue.config.productionTip = false;
+
+Vue.prototype.$tp = tp;
+Vue.prototype.$_ = _;
+
+Vue.use(Tab).use(Tabs).use(Button).use(Field).use(CellGroup).use(NumberKeyboard);
 
 /* eslint-disable no-new */
 new Vue({
