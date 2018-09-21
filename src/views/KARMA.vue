@@ -65,7 +65,7 @@
         data: {},
         active: 0,
         address: '',
-        userName: 'wangsitu2134',
+        userName: '',
         powerUpQuantity: '',
         powerDownQuantity: '',
         permission: 'active',
