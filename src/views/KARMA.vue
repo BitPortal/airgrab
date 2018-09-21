@@ -5,7 +5,7 @@
       <p>Total：{{total}} KARMA</p>
       <p>Powered Up：{{powerUp}} KARMA</p>
       <p>Refunding：{{refunding}} KARMA</p>
-      <p v-if="powerUp > 0">Reward time </p>
+      <p v-if="powerUp > 0">Reward time {{$moment(rewardTime).format('YYYY/MM/DD HH:mm')}}</p>
     </header>
 
     <main>
@@ -71,7 +71,8 @@
         permission: 'active',
         total: '0.0000',
         powerUp: '0.0000',
-        refunding: '0.0000'
+        refunding: '0.0000',
+        rewardTime: ''
       }
     },
 
@@ -151,12 +152,10 @@
       submitPowerUp() {
         if (this.quantityCheck(this.powerUpQuantity, '抵押')) {
           this.powerUpQuantity = Number(this.powerUpQuantity).toFixed(4);
-          console.log(this.powerUpData);
           this.$tp.pushEosAction(this.powerUpData).then(res => {
             if (res.result) {
               this.getInfo();
             }
-            // res.result ? this.$dialog.alert({message: '抵押操作成功'}) : this.$dialog.alert({message: '抵押操作失败'});
           });
         }
       },
@@ -168,7 +167,6 @@
             if (res.result) {
               this.getInfo();
             }
-            // res.result ? this.$dialog.alert({message: '赎回操作成功'}) : this.$dialog.alert({message: '赎回操作失败'});
           });
         }
       },
@@ -186,6 +184,8 @@
           if (res.result) {
             if (res.data.rows.length > 0) {
               this.refunding = res.data.rows[0].quantity.replace(' KARMA', '');
+            } else {
+              this.refunding = '0.0000'
             }
           }
         });
@@ -204,7 +204,11 @@
           if (res.result) {
             console.log(res, 2222);
             if (res.data.rows.length > 0) {
-              this.powerUp = res.data.rows[0].quantity.replace(' KARMA', '');
+              let sevenDay = 1000 * 60 * 60 * 24 * 7;
+              this.powerUp = res.data.rows[0].weight.replace(' KARMA', '');
+              this.rewardTime = (res.data.rows[0].last_claim_time / 1000) + sevenDay ;
+            } else {
+              this.powerUp = '0.0000';
             }
           }
         });
@@ -218,7 +222,7 @@
           symbol: 'KARMA'
         }).then(res => {
           if (res.result) {
-            // console.log(res, 3333);
+            console.log(res, 3333);
             if (res.data.balance.length > 0) {
               this.total = res.data.balance[0].replace(' KARMA', '');
             }
@@ -229,6 +233,7 @@
       getInfo() {
         this.$tp.getCurrentWallet().then(res => {
           if (res.result) {
+            console.log(res, 111);
             this.address = res.data.address;
             this.userName = res.data.name;
             this.getBalance();

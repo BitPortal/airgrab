@@ -3,24 +3,22 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import momnet from 'dayjs';
 
 import tp from "tp-eosjs"
 import _ from 'lodash'
 import './base/_main.scss'
-// import './lib/css/dialog.css'
-// import './lib/js/jquery.min';
-// import './lib/js/mDialogMin';
 
 import { Tab, Tabs, Button, Field, CellGroup, NumberKeyboard, Dialog } from 'vant';
 
 // import VConsole from 'vconsole';
 // const vConsole = new VConsole();
 
-
 Vue.config.productionTip = false;
 
 Vue.prototype.$tp = tp;
 Vue.prototype.$_ = _;
+Vue.prototype.$moment = momnet;
 
 Vue.use(Tab).use(Tabs).use(Button).use(Field).use(CellGroup).use(NumberKeyboard);
 Vue.use(Dialog);
