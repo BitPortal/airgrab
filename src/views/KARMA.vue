@@ -121,22 +121,22 @@
     methods: {
       quantityCheck(quantity, type) {
         if (quantity === '') {
-          Dialog.init(`${type}数量不能为空`);
+          this.$dialog.alert({message: `${type}数量不能为空`});
           return false;
         }
 
         if (quantity <= 0) {
-          Dialog.init(`${type}数量必须大于0`);
+          this.$dialog.alert({message: `${type}数量必须大于0`});
           return false;
         }
 
         if (quantity > this.total && type === '抵押') {
-          Dialog.init(`${type}不能大于${this.total}`);
+          this.$dialog.alert({message: `${type}不能大于${this.total}`});
           return false;
         }
 
         if (quantity > this.powerUp && type === '赎回') {
-          Dialog.init(`${type}不能大于${this.powerUp}`);
+          this.$dialog.alert({message: `${type}不能大于${this.powerUp}`});
           return false;
         }
 
@@ -148,7 +148,7 @@
           this.powerUpQuantity = Number(this.powerUpQuantity).toFixed(4);
           console.log(this.powerUpData);
           this.$tp.pushEosAction(this.powerUpData).then(res => {
-            res.result ? Dialog.init('抵押操作成功') : Dialog.init('抵押操作失败');
+            res.result ? this.$dialog.alert({message: '抵押操作成功'}) : this.$dialog.alert({message: '抵押操作失败'});
           });
         }
       },
@@ -157,7 +157,7 @@
         if (this.quantityCheck(this.powerDownQuantity, '赎回')) {
           this.powerDownQuantity = Number(this.powerDownQuantity).toFixed(4);
           this.$tp.pushEosAction(this.powerDownData).then(res => {
-            res.result ? Dialog.init('赎回操作成功') : Dialog.init('赎回操作失败');
+            res.result ? this.$dialog.alert({message: '赎回操作成功'}) : this.$dialog.alert({message: '赎回操作失败'});
           });
         }
       },

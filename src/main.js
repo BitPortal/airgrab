@@ -7,8 +7,11 @@ import router from './router'
 import tp from "tp-eosjs"
 import _ from 'lodash'
 import './base/_main.scss'
+// import './lib/css/dialog.css'
+// import './lib/js/jquery.min';
+// import './lib/js/mDialogMin';
 
-import { Tab, Tabs, Button, Field, CellGroup, NumberKeyboard } from 'vant';
+import { Tab, Tabs, Button, Field, CellGroup, NumberKeyboard, Dialog } from 'vant';
 
 import VConsole from 'vconsole';
 const vConsole = new VConsole();
@@ -20,6 +23,7 @@ Vue.prototype.$tp = tp;
 Vue.prototype.$_ = _;
 
 Vue.use(Tab).use(Tabs).use(Button).use(Field).use(CellGroup).use(NumberKeyboard);
+Vue.use(Dialog);
 
 /* eslint-disable no-new */
 new Vue({

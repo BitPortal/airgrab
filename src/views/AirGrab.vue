@@ -155,11 +155,10 @@
           address: this.currentAddress
         }).then(res => {
           if (res.result) {
-            Dialog.init('执行成功');
+            this.$dialog.alert({message: `执行成功`});
             this.getUserInfo();
-          }
-          else {
-            Dialog.init('执行失败');
+          } else {
+            this.$dialog.alert({message: `执行失败`});
             this.getUserInfo();
           }
         });

@@ -42,8 +42,8 @@ module.exports = {
 
         // Paths
         assetsRoot: path.resolve(__dirname, '../dist'),
-        assetsSubDirectory: 'static',
-        assetsPublicPath: '/airgrab/',
+        assetsSubDirectory: './airgrabStatic',
+        // assetsPublicPath: './',
 
         /**
          * Source Maps
