@@ -10,6 +10,10 @@ const router = new Router({
   routes: [
     {
       path: '/',
+      redirect: '/AirGrab',
+    },
+    {
+      path: '/AirGrab',
       name: 'AirGrab',
       component: () => import('../views/AirGrab')
     },

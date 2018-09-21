@@ -13,8 +13,8 @@ import './base/_main.scss'
 
 import { Tab, Tabs, Button, Field, CellGroup, NumberKeyboard, Dialog } from 'vant';
 
-import VConsole from 'vconsole';
-const vConsole = new VConsole();
+// import VConsole from 'vconsole';
+// const vConsole = new VConsole();
 
 
 Vue.config.productionTip = false;
