@@ -32,160 +32,160 @@
 </template>
 
 <script>
-  import tp from "tp-eosjs";
-  import _ from 'lodash';
+import tp from 'tp-eosjs';
+import _ from 'lodash';
 
-  export default {
-    name: "HelloWorld",
-    data() {
-      return {
-        currentAccount: "",
-        currentAddress: '',
-        grabList: [
-          {
-            symbol: "ATD",
-            logo: 'https://dapp.mytokenpocket.vip/token-logo/EOS_eosatidiumio_ATD.png',
-            description:
-              "Payments & Budget Management Decentralized App Leveraging the Blockchain, Cryptocurrency and AI Technologies. Drops happen every 24 hours, Airgrab Today!",
-            website: "https://www.atidium.io/",
-            keywords: '创世账号, 空投比例1:1',
-            contract: "eosatidiumio",
-            claimKey: 'owner',
-            actionName: "signup",
-            data: {
-              quantity: "0.0000 ATD"
-            },
-            valid: true,
-            balance: ''
+export default {
+  name: 'HelloWorld',
+  data() {
+    return {
+      currentAccount: '',
+      currentAddress: '',
+      grabList: [
+        {
+          symbol: 'ATD',
+          logo: 'https://dapp.mytokenpocket.vip/token-logo/EOS_eosatidiumio_ATD.png',
+          description:
+              'Payments & Budget Management Decentralized App Leveraging the Blockchain, Cryptocurrency and AI Technologies. Drops happen every 24 hours, Airgrab Today!',
+          website: 'https://www.atidium.io/',
+          keywords: '创世账号, 空投比例1:1',
+          contract: 'eosatidiumio',
+          claimKey: 'owner',
+          actionName: 'signup',
+          data: {
+            quantity: '0.0000 ATD'
           },
-          {
-            symbol: "RIDL",
-            logo: 'https://dapp.mytokenpocket.vip/token-logo/EOS_ridlridlcoin_RIDL.png',
-            description:
-              "Support Scatter and trustless reputation on blockchain.",
-            keywords: '预计快照时间9月1日（抵押部分也计算在内）, 空投比例1:1',
-            website: "https://ridl.get-scatter.com",
-            contract: "ridlridlcoin",
-            claimKey: 'claimer',
-            actionName: "claim",
-            data: {},
-            valid: true,
-            balance: ''
-          },
-          {
-            symbol: "TRYBE",
-            logo: 'https://dapp.mytokenpocket.vip/token-logo/EOS_trybenetwork_TRYBE.png',
-            description:
-              "A tokenized knowledge and content sharing platform. Airgrab now for 50 TRYBE tokens (dropped 11th September). Sign up to the platform for a bonus 100 tokens.",
-            keywords: '空投时间9月11日',
-            website: "https://trybe.one",
-            contract: "trybenetwork",
-            claimKey: 'claimer',
-            actionName: "claim",
-            data: {},
-            valid: true,
-            balance: ''
+          valid: true,
+          balance: ''
+        },
+        {
+          symbol: 'RIDL',
+          logo: 'https://dapp.mytokenpocket.vip/token-logo/EOS_ridlridlcoin_RIDL.png',
+          description:
+              'Support Scatter and trustless reputation on blockchain.',
+          keywords: '预计快照时间9月1日（抵押部分也计算在内）, 空投比例1:1',
+          website: 'https://ridl.get-scatter.com',
+          contract: 'ridlridlcoin',
+          claimKey: 'claimer',
+          actionName: 'claim',
+          data: {},
+          valid: true,
+          balance: ''
+        },
+        {
+          symbol: 'TRYBE',
+          logo: 'https://dapp.mytokenpocket.vip/token-logo/EOS_trybenetwork_TRYBE.png',
+          description:
+              'A tokenized knowledge and content sharing platform. Airgrab now for 50 TRYBE tokens (dropped 11th September). Sign up to the platform for a bonus 100 tokens.',
+          keywords: '空投时间9月11日',
+          website: 'https://trybe.one',
+          contract: 'trybenetwork',
+          claimKey: 'claimer',
+          actionName: 'claim',
+          data: {},
+          valid: true,
+          balance: ''
 
+        },
+        {
+          symbol: 'WIZZ',
+          logo: 'https://dapp.mytokenpocket.vip/token-logo/EOS_wizznetwork1_WIZZ.png',
+          description:
+              'Modern Decentralized Ecosystem, Built on EOSIO. Tools, Rewards, Chat, and more. AIGRAB NOW!',
+          website: 'https://wizz.network/',
+          contract: 'wizznetwork1',
+          claimKey: 'owner',
+          actionName: 'signup',
+          data: {
+            quantity: '0.0000 WIZZ'
           },
-          {
-            symbol: "WIZZ",
-            logo: 'https://dapp.mytokenpocket.vip/token-logo/EOS_wizznetwork1_WIZZ.png',
-            description:
-              "Modern Decentralized Ecosystem, Built on EOSIO. Tools, Rewards, Chat, and more. AIGRAB NOW!",
-            website: "https://wizz.network/",
-            contract: "wizznetwork1",
-            claimKey: 'owner',
-            actionName: "signup",
-            data: {
-              quantity: "0.0000 WIZZ"
-            },
-            valid: true,
-            balance: ''
+          valid: true,
+          balance: ''
+        },
+        {
+          symbol: 'POOR',
+          logo: 'https://dapp.mytokenpocket.vip/token-logo/EOS_poormantoken_POOR.png',
+          description:
+              'A public test of the airgrab and alternative airdrop methods.',
+          keywords: '8月31日快照',
+          website: 'https://eostoolkit.io/airgrab',
+          contract: 'poormantoken',
+          claimKey: 'owner',
+          actionName: 'signup',
+          data: {
+            quantity: '0.0000 POOR'
           },
+          valid: true,
+          balance: ''
+        }
+      ]
+    };
+  },
+  created() {
+    tp.getCurrentWallet().then(res => {
+      if (res.result) {
+        this.currentAccount = res.data.name;
+        this.currentAddress = res.data.address;
+
+        this.getUserInfo();
+      }
+    });
+  },
+
+  methods: {
+    grab(index) {
+      const grabInfo = this.grabList[index];
+
+      const extendsData = {};
+      extendsData[grabInfo.claimKey] = this.currentAccount;
+
+      tp.pushEosAction({
+        actions: [
           {
-            symbol: "POOR",
-            logo: 'https://dapp.mytokenpocket.vip/token-logo/EOS_poormantoken_POOR.png',
-            description:
-              "A public test of the airgrab and alternative airdrop methods.",
-            keywords: '8月31日快照',
-            website: "https://eostoolkit.io/airgrab",
-            contract: "poormantoken",
-            claimKey: 'owner',
-            actionName: "signup",
-            data: {
-              quantity: "0.0000 POOR"
-            },
-            valid: true,
-            balance: ''
+            account: grabInfo.contract,
+            name: grabInfo.actionName,
+            authorization: [{
+              actor: this.currentAccount,
+              permission: 'active'
+            }],
+            data: _.assignIn(grabInfo.data, extendsData)
           }
-        ]
-      };
-    },
-    created() {
-      tp.getCurrentWallet().then(res => {
+        ],
+        account: this.currentAccount,
+        address: this.currentAddress
+      }).then(res => {
         if (res.result) {
-          this.currentAccount = res.data.name;
-          this.currentAddress = res.data.address;
-
+          this.$dialog.alert({ message: `执行成功` });
+          this.getUserInfo();
+        } else {
+          this.$dialog.alert({ message: `执行失败` });
           this.getUserInfo();
         }
       });
     },
 
-    methods: {
-      grab(index) {
-        let grabInfo = this.grabList[index];
-
-        let extendsData = {};
-        extendsData[grabInfo.claimKey] = this.currentAccount;
-
-        tp.pushEosAction({
-          actions: [
-            {
-              account: grabInfo.contract,
-              name: grabInfo.actionName,
-              authorization: [{
-                actor: this.currentAccount,
-                permission: 'active'
-              }],
-              data: _.assignIn(grabInfo.data, extendsData)
-            }
-          ],
+    getUserInfo() {
+      const grabList = this.grabList;
+      _.forEach(grabList, item => {
+        const params = {
           account: this.currentAccount,
-          address: this.currentAddress
-        }).then(res => {
+          contract: item.contract,
+          symbol: item.symbol
+        };
+        tp.getEosBalance(params).then(res => {
           if (res.result) {
-            this.$dialog.alert({message: `执行成功`});
-            this.getUserInfo();
-          } else {
-            this.$dialog.alert({message: `执行失败`});
-            this.getUserInfo();
-          }
-        });
-      },
-
-      getUserInfo() {
-        let grabList = this.grabList;
-        _.forEach(grabList, item => {
-          let params = {
-            account: this.currentAccount,
-            contract: item.contract,
-            symbol: item.symbol
-          }
-          tp.getEosBalance(params).then(res => {
-            if (res.result) {
-              if (res.data.balance && res.data.balance.length) {
-                item.valid = false;
-                item.balance = res.data.balance[0];
-              }
+            if (res.data.balance && res.data.balance.length) {
+              item.valid = false;
+              item.balance = res.data.balance[0];
             }
-          })
+          }
         });
+      });
 
-        this.grabList = grabList;
-      }
+      this.grabList = grabList;
     }
-  };
+  }
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

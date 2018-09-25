@@ -55,199 +55,199 @@
 </template>
 
 <script>
-  import GlobalMethods from '../mixins/GlobalMethos';
+import GlobalMethods from '../mixins/GlobalMethos';
 
-  export default {
-    name: "KARMA",
-    mixins: [GlobalMethods],
-    data() {
+export default {
+  name: 'KARMA',
+  mixins: [GlobalMethods],
+  data() {
+    return {
+      data: {},
+      active: 0,
+      address: '',
+      userName: '',
+      powerUpQuantity: '',
+      powerDownQuantity: '',
+      permission: 'active',
+      total: '0.0000',
+      powerUp: '0.0000',
+      refunding: '0.0000',
+      rewardTime: ''
+    };
+  },
+
+  computed: {
+    'powerUpData'() {
       return {
-        data: {},
-        active: 0,
-        address: '',
-        userName: '',
-        powerUpQuantity: '',
-        powerDownQuantity: '',
-        permission: 'active',
-        total: '0.0000',
-        powerUp: '0.0000',
-        refunding: '0.0000',
-        rewardTime: ''
-      }
-    },
-
-    computed: {
-      'powerUpData'() {
-        return {
-          actions: [
-            {
-              account: 'therealkarma',
-              name: 'powerup',
-              authorization: [
-                {
-                  actor: this.userName,
-                  permission: this.permission
-                }
-              ],
-              data: {
-                owner: this.userName,
-                quantity: `${this.powerUpQuantity} KARMA`
+        actions: [
+          {
+            account: 'therealkarma',
+            name: 'powerup',
+            authorization: [
+              {
+                actor: this.userName,
+                permission: this.permission
               }
+            ],
+            data: {
+              owner: this.userName,
+              quantity: `${this.powerUpQuantity} KARMA`
             }
-          ],
-          address: this.address,
-          account: this.userName
-        }
-      },
+          }
+        ],
+        address: this.address,
+        account: this.userName
+      };
+    },
 
-      'powerDownData'() {
-        return {
-          actions: [
-            {
-              account: 'therealkarma',
-              name: 'powerdown',
-              authorization: [
-                {
-                  actor: this.userName,
-                  permission: this.permission
-                }
-              ],
-              data: {
-                owner: this.userName,
-                quantity: `${this.powerDownQuantity} KARMA`
+    'powerDownData'() {
+      return {
+        actions: [
+          {
+            account: 'therealkarma',
+            name: 'powerdown',
+            authorization: [
+              {
+                actor: this.userName,
+                permission: this.permission
               }
-            }
-          ],
-          address: this.address,
-          account: this.userName
-        }
-      }
-    },
-
-    methods: {
-      quantityCheck(quantity, type) {
-        if (quantity === '') {
-          this.$dialog.alert({message: `${type}数量不能为空`});
-          return false;
-        }
-
-        if (quantity <= 0) {
-          this.$dialog.alert({message: `${type}数量必须大于0`});
-          return false;
-        }
-
-        if (quantity > this.total && type === '抵押') {
-          this.$dialog.alert({message: `${type}不能大于${this.total}`});
-          return false;
-        }
-
-        if (quantity > this.powerUp && type === '赎回') {
-          this.$dialog.alert({message: `${type}不能大于${this.powerUp}`});
-          return false;
-        }
-
-        return true
-      },
-
-      submitPowerUp() {
-        if (this.quantityCheck(this.powerUpQuantity, '抵押')) {
-          this.powerUpQuantity = Number(this.powerUpQuantity).toFixed(4);
-          this.$tp.pushEosAction(this.powerUpData).then(res => {
-            if (res.result) {
-              this.getInfo();
-            }
-          });
-        }
-      },
-
-      submitPowerDown() {
-        if (this.quantityCheck(this.powerDownQuantity, '赎回')) {
-          this.powerDownQuantity = Number(this.powerDownQuantity).toFixed(4);
-          this.$tp.pushEosAction(this.powerDownData).then(res => {
-            if (res.result) {
-              this.getInfo();
-            }
-          });
-        }
-      },
-
-      // 退回状态
-      getRefundingTable() {
-        this.$tp.getTableRows({
-          json: true,
-          code: 'therealkarma',
-          scope: this.userName,
-          table: 'refunding',
-          lower_bound: "10",
-          limit: 500
-        }).then(res => {
-          if (res.result) {
-            if (res.data.rows.length > 0) {
-              this.refunding = res.data.rows[0].quantity.replace(' KARMA', '');
-            } else {
-              this.refunding = '0.0000'
+            ],
+            data: {
+              owner: this.userName,
+              quantity: `${this.powerDownQuantity} KARMA`
             }
           }
-        });
-      },
-
-      // 抵押状态
-      getPowerTable() {
-        this.$tp.getTableRows({
-          json: true,
-          code: 'therealkarma',
-          scope: this.userName,
-          table: 'power',
-          lower_bound: "10",
-          limit: 500
-        }).then(res => {
-          if (res.result) {
-            console.log(res, 2222);
-            if (res.data.rows.length > 0) {
-              let sevenDay = 1000 * 60 * 60 * 24 * 7;
-              this.powerUp = res.data.rows[0].weight.replace(' KARMA', '');
-              this.rewardTime = (res.data.rows[0].last_claim_time / 1000) + sevenDay ;
-            } else {
-              this.powerUp = '0.0000';
-            }
-          }
-        });
-      },
-
-      // 获取当前余额
-      getBalance() {
-        this.$tp.getEosBalance({
-          account: this.userName,
-          contract: 'therealkarma',
-          symbol: 'KARMA'
-        }).then(res => {
-          if (res.result) {
-            console.log(res, 3333);
-            if (res.data.balance.length > 0) {
-              this.total = res.data.balance[0].replace(' KARMA', '');
-            }
-          }
-        });
-      },
-
-      getInfo() {
-        this.$tp.getCurrentWallet().then(res => {
-          if (res.result) {
-            console.log(res, 111);
-            this.address = res.data.address;
-            this.userName = res.data.name;
-            this.getBalance();
-            this.getRefundingTable();
-            this.getPowerTable();
-          }
-        });
-      }
-    },
-
-    created() {
-      this.getInfo();
+        ],
+        address: this.address,
+        account: this.userName
+      };
     }
+  },
+
+  methods: {
+    quantityCheck(quantity, type) {
+      if (quantity === '') {
+        this.$dialog.alert({ message: `${type}数量不能为空` });
+        return false;
+      }
+
+      if (quantity <= 0) {
+        this.$dialog.alert({ message: `${type}数量必须大于0` });
+        return false;
+      }
+
+      if (quantity > this.total && type === '抵押') {
+        this.$dialog.alert({ message: `${type}不能大于${this.total}` });
+        return false;
+      }
+
+      if (quantity > this.powerUp && type === '赎回') {
+        this.$dialog.alert({ message: `${type}不能大于${this.powerUp}` });
+        return false;
+      }
+
+      return true;
+    },
+
+    submitPowerUp() {
+      if (this.quantityCheck(this.powerUpQuantity, '抵押')) {
+        this.powerUpQuantity = Number(this.powerUpQuantity).toFixed(4);
+        this.$tp.pushEosAction(this.powerUpData).then(res => {
+          if (res.result) {
+            this.getInfo();
+          }
+        });
+      }
+    },
+
+    submitPowerDown() {
+      if (this.quantityCheck(this.powerDownQuantity, '赎回')) {
+        this.powerDownQuantity = Number(this.powerDownQuantity).toFixed(4);
+        this.$tp.pushEosAction(this.powerDownData).then(res => {
+          if (res.result) {
+            this.getInfo();
+          }
+        });
+      }
+    },
+
+    // 退回状态
+    getRefundingTable() {
+      this.$tp.getTableRows({
+        json: true,
+        code: 'therealkarma',
+        scope: this.userName,
+        table: 'refunding',
+        lower_bound: '10',
+        limit: 500
+      }).then(res => {
+        if (res.result) {
+          if (res.data.rows.length > 0) {
+            this.refunding = res.data.rows[0].quantity.replace(' KARMA', '');
+          } else {
+            this.refunding = '0.0000';
+          }
+        }
+      });
+    },
+
+    // 抵押状态
+    getPowerTable() {
+      this.$tp.getTableRows({
+        json: true,
+        code: 'therealkarma',
+        scope: this.userName,
+        table: 'power',
+        lower_bound: '10',
+        limit: 500
+      }).then(res => {
+        if (res.result) {
+          console.log(res, 2222);
+          if (res.data.rows.length > 0) {
+            const sevenDay = 1000 * 60 * 60 * 24 * 7;
+            this.powerUp = res.data.rows[0].weight.replace(' KARMA', '');
+            this.rewardTime = (res.data.rows[0].last_claim_time / 1000) + sevenDay;
+          } else {
+            this.powerUp = '0.0000';
+          }
+        }
+      });
+    },
+
+    // 获取当前余额
+    getBalance() {
+      this.$tp.getEosBalance({
+        account: this.userName,
+        contract: 'therealkarma',
+        symbol: 'KARMA'
+      }).then(res => {
+        if (res.result) {
+          console.log(res, 3333);
+          if (res.data.balance.length > 0) {
+            this.total = res.data.balance[0].replace(' KARMA', '');
+          }
+        }
+      });
+    },
+
+    getInfo() {
+      this.$tp.getCurrentWallet().then(res => {
+        if (res.result) {
+          console.log(res, 111);
+          this.address = res.data.address;
+          this.userName = res.data.name;
+          this.getBalance();
+          this.getRefundingTable();
+          this.getPowerTable();
+        }
+      });
+    }
+  },
+
+  created() {
+    this.getInfo();
   }
+};
 </script>
 
 <style lang="scss" scoped>
