@@ -9,6 +9,8 @@ import tp from 'tp-eosjs';
 import _ from 'lodash';
 import './base/_main.scss';
 
+import i18n from './i18n';
+
 import { Tab, Tabs, Button, Field, CellGroup, NumberKeyboard, Dialog } from 'vant';
 
 // import VConsole from 'vconsole';
@@ -27,6 +29,7 @@ Vue.use(Dialog);
 new Vue({
   el: '#app',
   router,
+  i18n,
   components: { App },
   template: '<App/>'
 });

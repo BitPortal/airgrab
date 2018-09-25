@@ -9,6 +9,11 @@
     </header>
 
     <main>
+
+      <!-- 国际化测试 -->
+      <!--<div>{{$t('i18nView.title')}}</div>-->
+      <!--<van-button class="karma-btn" type="default" @click="languageChange">切换语言</van-button>-->
+
       <van-tabs v-model="active">
         <van-tab title="Power up" class="karma-tab">
           <div class="karma-title">
@@ -125,6 +130,10 @@ export default {
   },
 
   methods: {
+    // languageChange() {
+    //   this.$i18n.locale === 'zh' ? this.$i18n.locale = 'en' : this.$i18n.locale = 'zh';
+    // },
+
     quantityCheck(quantity, type) {
       if (quantity === '') {
         this.$dialog.alert({ message: `${type}数量不能为空` });
@@ -202,7 +211,7 @@ export default {
         limit: 500
       }).then(res => {
         if (res.result) {
-          console.log(res, 2222);
+          // console.log(res, 2222);
           if (res.data.rows.length > 0) {
             const sevenDay = 1000 * 60 * 60 * 24 * 7;
             this.powerUp = res.data.rows[0].weight.replace(' KARMA', '');
@@ -214,7 +223,7 @@ export default {
       });
     },
 
-    // 获取当前余额
+    // 获取KARMA当前余额
     getBalance() {
       this.$tp.getEosBalance({
         account: this.userName,
@@ -222,7 +231,7 @@ export default {
         symbol: 'KARMA'
       }).then(res => {
         if (res.result) {
-          console.log(res, 3333);
+          // console.log(res, 3333);
           if (res.data.balance.length > 0) {
             this.total = res.data.balance[0].replace(' KARMA', '');
           }
@@ -233,7 +242,7 @@ export default {
     getInfo() {
       this.$tp.getCurrentWallet().then(res => {
         if (res.result) {
-          console.log(res, 111);
+          // console.log(res, 111);
           this.address = res.data.address;
           this.userName = res.data.name;
           this.getBalance();
