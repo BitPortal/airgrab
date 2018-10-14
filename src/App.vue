@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1><img class="logo" src="./assets/tp-logo.png"> <span>AirGrab</span></h1>
+    <h1><img class="logo" src="./assets/bp-logo.png"> <span>AirGrab</span></h1>
     <router-view/>
   </div>
 </template>

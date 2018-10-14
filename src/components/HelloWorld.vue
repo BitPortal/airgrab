@@ -1,10 +1,10 @@
 <template>
   <div class="hello">
     <p class="intro">AirGrab 是一种糖果分发的方式，需要消耗用户的内存（每种代币大概需要0.25KB 左右）。执行AirGrab后需要等待项目方空投。具体空投时间请查看各项目的简介和官网。</p>
-      <!-- <div id="divselect"> 
-          <em>请选择账号</em> 
+      <!-- <div id="divselect">
+          <em>请选择账号</em>
           <ul class="account-ul">
-          </ul> 
+          </ul>
       </div>  -->
       <div class="current-account">当前账号：{{currentAccount}}</div>
       <div class="air-item" v-for="item, index in grabList">
@@ -12,12 +12,12 @@
           <img class="logo" :src="item.logo" >
           <div class="base-info">
             <span class="symbol">{{item.symbol}}</span><br>
-            <a class="website" :href="item.website">{{item.website}}</a> 
+            <a class="website" :href="item.website">{{item.website}}</a>
           </div>
           <span class="balance">
             <button v-if="item.valid" class="grab-btn" @click="grab(index)">AirGrab</button>
             <span v-else>{{item.balance}}</span>
-          </span> 
+          </span>
         </div>
         <hr>
         <div class="desc"><span class="label-title">简介:</span> {{item.description}}</div>
@@ -167,7 +167,7 @@ export default {
 
       let extendsData = {};
       extendsData[grabInfo.claimKey] = this.currentAccount;
-  
+
       tp.pushEosAction({
         actions: [
             {
@@ -230,12 +230,12 @@ export default {
   margin: 10px 0 20px;
   font-size: 12px;
   background-color: #f9f9f9;
- 
+
   background: linear-gradient(
     to right,
     rgb(250, 251, 252) 0%,
     rgb(243, 245, 247) 100%
-  ); 
+  );
 
   box-shadow: 0 0 5px 0 #ddd;
 }
@@ -282,14 +282,14 @@ div {
   color: #fff;
   padding: 6px 13px;
   background: rgb(122, 188, 255); /* Old browsers */
- 
+
   background: linear-gradient(
     to right,
     rgba(122, 188, 255, 1) 0%,
     rgba(96, 171, 248, 1) 46%,
     rgba(96, 171, 248, 1) 46%,
     rgba(64, 150, 238, 1) 100%
-  ); 
+  );
 }
 .website {
   text-decoration: none;
