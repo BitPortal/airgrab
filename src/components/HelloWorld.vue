@@ -32,6 +32,7 @@
 import tp from "tp-eosjs";
 import network from '@/utils/network'
 import api from '@/utils/eos'
+import Eos from 'eosjs'
 import _ from 'lodash';
 
 export default {
@@ -215,30 +216,49 @@ export default {
         extendsData['ram_payer'] = this.currentAccount;
       }
 
-      console.log(111)
-
-      tp.pushEosAction({
-        actions: [
+      if(scatter){
+        const eos = scatter.eos(network, Eos, {})
+        eos.transaction({
+          actions: [
             {
-                account: grabInfo.contract,
-                name: grabInfo.actionName,
-                authorization: [{
-                    actor: this.currentAccount,
-                    permission: 'active'
-                }],
-                data: _.assignIn(grabInfo.data, extendsData)
+              account: grabInfo.contract,
+              name: grabInfo.actionName,
+              authorization: [{
+                actor: this.currentAccount,
+                permission: 'active'
+              }],
+              data: _.assignIn(grabInfo.data, extendsData)
             }
-        ],
-        account: this.currentAccount,
-        address: this.currentAddress
-      }).then(res => {
-        if (res.result) {
+          ]
+        }, {broadcast: true, sign: true}).then(() => {
+          console.log('sucesss')
           Dialog.init(this.$t('i18nView.successTip'));
-        } else {
-          Dialog.init(this.$t('i18nView.failTip'));
-        }
-        this.getUserInfo();
-      });
+          this.getUserInfo();
+        }).catch(e=>{
+          Dialog.init(e.message);
+          this.getUserInfo();
+        })
+      }
+      // tp.pushEosAction({
+      //   actions: [
+      //       {
+      //           account: grabInfo.contract,
+      //           name: grabInfo.actionName,
+      //           authorization: [{
+      //               actor: this.currentAccount,
+      //               permission: 'active'
+      //           }],
+      //           data: _.assignIn(grabInfo.data, extendsData)
+      //       }
+      //   ]
+      // }).then(res => {
+      //   if (res.result) {
+      //     Dialog.init(this.$t('i18nView.successTip'));
+      //   } else {
+      //     Dialog.init(this.$t('i18nView.failTip'));
+      //   }
+      //   this.getUserInfo();
+      // });
     },
 
     getUserInfo() {
