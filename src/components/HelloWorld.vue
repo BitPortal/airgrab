@@ -30,6 +30,8 @@
 
 <script>
 import tp from "tp-eosjs";
+import network from '@/utils/network'
+import api from '@/utils/eos'
 import _ from 'lodash';
 
 export default {
@@ -183,21 +185,23 @@ export default {
 
     };
   },
-
-  computed: {
-
-  },
-
   created() {
-    tp.getCurrentWallet().then(res => {
-      if (res.result) {
-        this.currentAccount = res.data.name;
-        this.currentAddress = res.data.address;
-
-        this.getUserInfo();
+    document.addEventListener('scatterLoaded', () => {
+      if (scatter) {
+        scatter.getIdentity({
+          accounts: [network]
+        }).then(() => {
+          const account = scatter.identity.accounts.find(account => account.blockchain === 'eos');
+          console.log(account)
+          if (!account) return;
+          this.currentAccount = account.name;
+          this.currentAddress = '';
+          this.getUserInfo();
+        }).catch(e => {
+          console.log(e);
+        });
       }
-    });
-
+    })
   },
 
   methods: {
@@ -210,6 +214,8 @@ export default {
       if (grabInfo.symbol === 'INF') {
         extendsData['ram_payer'] = this.currentAccount;
       }
+
+      console.log(111)
 
       tp.pushEosAction({
         actions: [
@@ -228,11 +234,10 @@ export default {
       }).then(res => {
         if (res.result) {
           Dialog.init(this.$t('i18nView.successTip'));
-          this.getUserInfo();
         } else {
           Dialog.init(this.$t('i18nView.failTip'));
-          this.getUserInfo();
         }
+        this.getUserInfo();
       });
     },
 
@@ -244,14 +249,13 @@ export default {
           contract: item.contract,
           symbol: item.symbol
         };
-        tp.getEosBalance(params).then(res => {
-          if (res.result) {
-            if (res.data.balance && res.data.balance.length) {
-              item.valid = false;
-              item.balance = res.data.balance[0];
-            }
+        //get eos balance
+        api.getCurrencyBalance(params.contract, params.account, params.symbol).then((row) => {
+          if(row[0]){
+            item.valid = false;
+            item.balance = row[0];
           }
-        })
+        });
       });
 
       this.grabList = grabList;
